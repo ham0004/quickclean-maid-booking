@@ -1,7 +1,7 @@
 # QuickClean - Simplified Maid Booking Platform
 
 ## 📋 Project Information
-- **Course:** CSE471 - System Analysis and Design
+- **Course:** CSE470 - Software Engineering 
 - **Section:** 18
 - **Group:** 11
 - **Student:** Sayed Ilham Azhar Harun
@@ -52,25 +52,31 @@ This project implements 3 main requirements with 12 features total:
 ## 📂 Project Structure
 quickclean-maid-booking/
 ├── docs/                    # Project documentation
-│   └── 22101262_finalproposal_section18.pdf
+│   ├── 22101262_finalproposal_section18.pdf
+│   └── diagrams/
+│       ├── class-diagram.png   # MVC Class Diagram (Image)
+│       └── class-diagram.md    # MVC Class Diagram (Mermaid Code)
 ├── frontend/                # React.js application (coming soon)
 ├── backend/                 # Express.js API (coming soon)
 ├── .gitignore              # Git ignore rules
 └── README.md               # This file
+
 ## 📚 Documentation
 - [Project Proposal](docs/22101262_finalproposal_section18.pdf)
-- [Class Diagram](docs/class-diagram.md) *(coming soon)*
+- [MVC Class Diagram](docs/diagrams/class-diagram.md)
+- [Class Diagram Image](docs/diagrams/class-diagram.png)
 
 ## 🚀 Project Status
 🔵 **Phase:** Initial Setup  
-📅 **Last Updated:** November 23, 2025
+📅 **Last Updated:** November 24, 2025
 
 - ✅ Project proposal completed
+- ✅ MVC Class Diagram completed
 - ✅ GitHub repository created
 - ✅ Base project structure set up
 - ⏳ Frontend development (not started)
 - ⏳ Backend development (not started)
-- ⏳ Database design (not started)
+- ⏳ Database schema implementation (not started)
 
 ## 📦 Installation (Coming Soon)
 Installation instructions will be added as development progresses.
@@ -98,15 +104,18 @@ npm run dev
 **Sayed Ilham Azhar Harun**  
 Student ID: 22101262  
 Section: 18  
-Course: CSE471 - System Analysis and Design  
-Institution: [Your University Name]
+Course: CSE470 - Software Engineering   
+Institution: Brac University
 
 ## 📄 License
-This is an academic project for CSE471 course.
+This is an academic project for CSE470 course.
 
 ## 📞 Contact
-For any queries regarding this project, please contact through the course instructor.
+**Sayed Ilham Azhar Harun**  
+📧 Email: ilham.azhar.harun@g.bracu.ac.bd  
+🎓 Student ID: 22101262  
+📚 Course: CSE470 - Software Engineering
 
----
+For academic queries, please contact through the course instructor.
 
 **Note:** This is a solo academic project. All code and documentation are original work created for educational purposes.
