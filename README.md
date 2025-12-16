@@ -18,87 +18,228 @@ The name "QuickClean" emphasizes the platform's core value proposition: fast, st
 ### Frontend
 - **React.js** - Component-based UI development
 - **TailwindCSS** - Modern, responsive styling
+- **React Router** - Client-side routing
+- **Axios** - HTTP client for API calls
 
 ### Backend
 - **Node.js** with **Express.js** - RESTful API development
 - **MongoDB** with **Mongoose** - Flexible NoSQL data storage
+- **bcrypt.js** - Password hashing
+- **JSON Web Tokens (JWT)** - Authentication
 
 ### Third-Party Services
 - **SendGrid API** - Email verification and notifications
-- **Vercel** - Deployment and hosting
+- **MongoDB Atlas** - Cloud database hosting
 
-## 📌 Project Requirements
+## 🚀 Getting Started
 
-This project implements 3 main requirements with 12 features total:
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- MongoDB Atlas account (or local MongoDB)
+- SendGrid account for email services
 
-### Requirement 1: User Registration & Email Verification System
-- User registration with role-based account creation
-- Automated email verification via SendGrid API
-- Account restriction based on verification status
-- Secure login with JWT token generation
+### Backend Setup
 
-### Requirement 2: Admin Service & Maid Management
-- Complete CRUD operations for service categories
-- Maid profile submission with document upload
-- Admin dashboard for maid verification workflow
-- Automated email notifications for maid approval status
+1. Navigate to the backend directory:
+```bash
+cd backend
+```
 
-### Requirement 3: Customer Booking & Maid Dashboard
-- Maid listing with detailed profile display
-- Booking request submission with date/time selection
-- Real-time email notifications for booking events
-- Maid dashboard for booking request management
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Create a `.env` file in the backend directory with the following variables:
+```env
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRE=7d
+SENDGRID_API_KEY=your_sendgrid_api_key
+SENDGRID_FROM_EMAIL=your_verified_sender_email
+FRONTEND_URL=http://localhost:3000
+```
+
+4. Start the development server:
+```bash
+npm run dev
+```
+
+The backend server will run on `http://localhost:5000`
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm start
+```
+
+The frontend will run on `http://localhost:3000`
+
+## 📡 API Endpoints
+
+### Authentication
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register a new user |
+| POST | `/api/auth/login` | Login and get JWT token |
+| GET | `/api/auth/verify/:token` | Verify email address |
+| POST | `/api/auth/resend-verification` | Resend verification email |
+| GET | `/api/auth/me` | Get current user (protected) |
+
+### Request/Response Examples
+
+#### Register User
+```json
+POST /api/auth/register
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "phone": "1234567890",
+  "password": "Password123",
+  "role": "customer"
+}
+
+Response:
+{
+  "success": true,
+  "message": "Registration successful! Please check your email to verify your account.",
+  "user": {
+    "id": "...",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "customer"
+  }
+}
+```
+
+#### Login User
+```json
+POST /api/auth/login
+{
+  "email": "john@example.com",
+  "password": "Password123"
+}
+
+Response:
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "user": {
+    "id": "...",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "customer"
+  }
+}
+```
 
 ## 📂 Project Structure
+```
 quickclean-maid-booking/
-├── docs/                    # Project documentation
+├── docs/                              # Project documentation
 │   ├── 22101262_finalproposal_section18.pdf
 │   └── diagrams/
-│       ├── class-diagram.png   # MVC Class Diagram (Image)
-│       └── class-diagram.md    # MVC Class Diagram (Mermaid Code)
-├── frontend/                # React.js application (coming soon)
-├── backend/                 # Express.js API (coming soon)
-├── .gitignore              # Git ignore rules
-└── README.md               # This file
+├── frontend/                          # React.js application
+│   ├── public/
+│   ├── src/
+│   │   ├── components/                # Reusable UI components
+│   │   │   └── Navbar.js
+│   │   ├── pages/                     # Page components
+│   │   │   ├── HomePage.js
+│   │   │   ├── RegisterPage.js
+│   │   │   ├── LoginPage.js
+│   │   │   └── EmailVerificationPage.js
+│   │   ├── services/                  # API service layer
+│   │   │   ├── api.js
+│   │   │   └── authService.js
+│   │   ├── App.js
+│   │   └── index.js
+│   ├── tailwind.config.js
+│   └── package.json
+├── backend/                           # Express.js API
+│   ├── config/
+│   │   └── db.js                      # MongoDB connection
+│   ├── controllers/
+│   │   └── authController.js          # Auth logic
+│   ├── middleware/
+│   │   └── authMiddleware.js          # JWT protection
+│   ├── models/
+│   │   └── User.js                    # User schema
+│   ├── routes/
+│   │   └── authRoutes.js              # Auth endpoints
+│   ├── services/
+│   │   ├── emailService.js            # SendGrid integration
+│   │   └── jwtService.js              # JWT utilities
+│   ├── server.js
+│   ├── .env.example
+│   └── package.json
+├── .gitignore
+└── README.md
+```
 
-## 📚 Documentation
-- [Project Proposal](docs/22101262_finalproposal_section18.pdf)
-- [MVC Class Diagram](docs/diagrams/class-diagram.md)
-- [Class Diagram Image](docs/diagrams/class-diagram.png)
+## 📌 Features Implemented
+
+### Sprint 2: User Registration & Login System ✅
+
+- ✅ User registration with role selection (customer/maid)
+- ✅ Email verification via SendGrid
+- ✅ Secure login with JWT authentication
+- ✅ Password hashing with bcrypt
+- ✅ Form validation (frontend & backend)
+- ✅ Responsive UI with TailwindCSS
+- ✅ Protected routes with auth middleware
 
 ## 🚀 Project Status
-🔵 **Phase:** Initial Setup  
-📅 **Last Updated:** November 24, 2025
+🟢 **Phase:** Sprint 2 Complete  
+📅 **Last Updated:** December 16, 2024
 
 - ✅ Project proposal completed
 - ✅ MVC Class Diagram completed
 - ✅ GitHub repository created
 - ✅ Base project structure set up
-- ⏳ Frontend development (not started)
-- ⏳ Backend development (not started)
-- ⏳ Database schema implementation (not started)
+- ✅ Backend API development complete
+- ✅ Frontend development complete
+- ✅ User authentication system complete
+- ✅ Email verification working
+- ⏳ Admin dashboard (Sprint 3)
+- ⏳ Maid management (Sprint 3)
+- ⏳ Booking system (Sprint 4)
 
-## 📦 Installation (Coming Soon)
-Installation instructions will be added as development progresses.
-```bash
-# Frontend setup (placeholder)
-cd frontend
-npm install
-npm start
+## 🧪 Testing
 
-# Backend setup (placeholder)
-cd backend
-npm install
-npm run dev
-```
+### API Testing with Postman
 
-## 🎯 Project Objectives
+1. **Test Registration:**
+   - POST `http://localhost:5000/api/auth/register`
+   - Body: `{ "name": "Test User", "email": "test@example.com", "phone": "1234567890", "password": "Test@123", "role": "customer" }`
 
-1. Develop a secure user authentication system with email verification
-2. Create an intuitive admin panel for managing service categories and verifying service providers
-3. Implement a straightforward booking system for customers
-4. Establish automated email notifications to keep users informed
-5. Build a clean, responsive interface that works seamlessly across devices
+2. **Test Login:**
+   - POST `http://localhost:5000/api/auth/login`
+   - Body: `{ "email": "test@example.com", "password": "Test@123" }`
+
+### Frontend Testing
+
+1. Navigate to `http://localhost:3000/register`
+2. Fill out the registration form
+3. Check email for verification link
+4. Click verification link
+5. Login at `http://localhost:3000/login`
 
 ## 👤 Author
 **Sayed Ilham Azhar Harun**  
