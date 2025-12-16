@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { verifyEmail } from '../services/authService';
 
 const EmailVerificationPage = () => {
     const { token } = useParams();
-    const [status, setStatus] = useState('verifying'); // verifying, success, error
+    const [status, setStatus] = useState('verifying'); // verifying, success, error, alreadyUsed
     const [message, setMessage] = useState('');
+    const hasVerified = useRef(false); // Prevent duplicate requests
 
     useEffect(() => {
         const verify = async () => {
+            // Prevent duplicate verification requests (React strict mode issue)
+            if (hasVerified.current) return;
+            hasVerified.current = true;
+
             try {
                 const response = await verifyEmail(token);
                 if (response.success) {
@@ -19,11 +24,17 @@ const EmailVerificationPage = () => {
                     setMessage(response.message || 'Verification failed. Please try again.');
                 }
             } catch (error) {
-                setStatus('error');
-                setMessage(
-                    error.response?.data?.message ||
-                    'The verification link is invalid or has expired.'
-                );
+                // Check if it's an "already used" error - treat as success
+                if (error.response?.data?.alreadyUsed) {
+                    setStatus('alreadyUsed');
+                    setMessage(error.response?.data?.message || 'This link has already been used. You can login now.');
+                } else {
+                    setStatus('error');
+                    setMessage(
+                        error.response?.data?.message ||
+                        'The verification link is invalid or has expired.'
+                    );
+                }
             }
         };
 
@@ -65,6 +76,31 @@ const EmailVerificationPage = () => {
                             </div>
                             <h1 className="text-2xl font-bold text-gray-900">
                                 Email Verified! 🎉
+                            </h1>
+                            <p className="mt-3 text-gray-600">
+                                {message}
+                            </p>
+                            <div className="mt-8 space-y-3">
+                                <Link to="/login" className="w-full btn-primary block">
+                                    Login to Your Account
+                                </Link>
+                                <Link to="/" className="w-full btn-outline block">
+                                    Go to Homepage
+                                </Link>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Already Used State - Friendly message */}
+                    {status === 'alreadyUsed' && (
+                        <>
+                            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-blue-100">
+                                <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h1 className="text-2xl font-bold text-gray-900">
+                                Already Verified! ✅
                             </h1>
                             <p className="mt-3 text-gray-600">
                                 {message}

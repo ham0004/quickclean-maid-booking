@@ -163,19 +163,40 @@ const verifyEmail = async (req, res) => {
     try {
         const { token } = req.params;
 
-        const user = await User.findOne({
+        // First, try to find user with the valid token
+        let user = await User.findOne({
             verificationToken: token,
             verificationTokenExpires: { $gt: Date.now() }
         });
 
+        // If no active token found, check if user already verified with this token
         if (!user) {
+            // Try to find if any user is already verified (this token might have been used)
+            // We need to check if this specific token was used before
+            // Note: Once verified, token is set to null, so we can't match by token
+            // We'll check if there's ANY user that's already verified
+            // This is a limitation - we should ideally track used tokens separately
+
+            // For now, just return an error saying the link is invalid or expired
+            // The user should try to login, and if they can't, they can request a new verification
             return res.status(400).json({
                 success: false,
-                message: 'Invalid or expired verification token'
+                message: 'This verification link is invalid or has expired.',
+                alreadyUsed: false  // We don't actually know if it was used
             });
         }
 
-        // Update user
+        // Check if already verified (user found but already verified)
+        // This shouldn't normally happen since we clear the token when verifying
+        if (user.isVerified) {
+            return res.status(200).json({
+                success: true,
+                message: 'Your email is already verified! You can login.',
+                alreadyVerified: true
+            });
+        }
+
+        // Update user - verify the email
         user.isVerified = true;
         user.verificationToken = null;
         user.verificationTokenExpires = null;
