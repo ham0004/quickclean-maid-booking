@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const { protect } = require('../middleware/authMiddleware');
+const { resendVerificationLimiter } = require('../middleware/rateLimitMiddleware');
 const {
     register,
     login,
@@ -62,8 +63,8 @@ router.post('/login', loginValidation, login);
 // GET /api/auth/verify/:token - Verify email
 router.get('/verify/:token', verifyEmail);
 
-// POST /api/auth/resend-verification - Resend verification email
-router.post('/resend-verification', resendVerificationValidation, resendVerification);
+// POST /api/auth/resend-verification - Resend verification email (rate limited)
+router.post('/resend-verification', resendVerificationLimiter, resendVerificationValidation, resendVerification);
 
 // GET /api/auth/me - Get current user (protected)
 router.get('/me', protect, getMe);

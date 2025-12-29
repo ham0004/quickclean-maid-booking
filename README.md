@@ -98,7 +98,7 @@ The frontend will run on `http://localhost:3000`
 | POST | `/api/auth/register` | Register a new user |
 | POST | `/api/auth/login` | Login and get JWT token |
 | GET | `/api/auth/verify/:token` | Verify email address |
-| POST | `/api/auth/resend-verification` | Resend verification email |
+| POST | `/api/auth/resend-verification` | Resend verification email (rate limited: 3/15min) |
 | GET | `/api/auth/me` | Get current user (protected) |
 
 ### Request/Response Examples
