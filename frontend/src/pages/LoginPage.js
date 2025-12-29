@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login, resendVerification } from '../services/authService';
 
@@ -13,6 +13,18 @@ const LoginPage = () => {
     const [message, setMessage] = useState({ type: '', text: '' });
     const [needsVerification, setNeedsVerification] = useState(false);
     const [isResending, setIsResending] = useState(false);
+    const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+    // Cooldown timer effect
+    useEffect(() => {
+        let timer;
+        if (cooldownSeconds > 0) {
+            timer = setTimeout(() => {
+                setCooldownSeconds(cooldownSeconds - 1);
+            }, 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [cooldownSeconds]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -97,11 +109,23 @@ const LoginPage = () => {
                 text: response.message || 'Verification email sent! Please check your inbox.'
             });
             setNeedsVerification(false);
+            // Start 60-second cooldown
+            setCooldownSeconds(60);
         } catch (error) {
-            setMessage({
-                type: 'error',
-                text: error.response?.data?.message || 'Failed to resend verification email.'
-            });
+            // Check for rate limit error
+            if (error.response?.status === 429) {
+                setMessage({
+                    type: 'error',
+                    text: error.response?.data?.message || 'Too many requests. Please try again later.'
+                });
+                // Set cooldown based on server response or default to 15 minutes
+                setCooldownSeconds(error.response?.data?.retryAfter ? error.response.data.retryAfter * 60 : 60);
+            } else {
+                setMessage({
+                    type: 'error',
+                    text: error.response?.data?.message || 'Failed to resend verification email.'
+                });
+            }
         } finally {
             setIsResending(false);
         }
@@ -133,8 +157,8 @@ const LoginPage = () => {
                     {/* Message */}
                     {message.text && (
                         <div className={`mb-6 p-4 rounded-xl ${message.type === 'success'
-                                ? 'bg-green-50 text-green-700 border border-green-200'
-                                : 'bg-red-50 text-red-700 border border-red-200'
+                            ? 'bg-green-50 text-green-700 border border-green-200'
+                            : 'bg-red-50 text-red-700 border border-red-200'
                             }`}>
                             {message.type === 'success' ? '✅ ' : '❌ '}
                             {message.text}
@@ -149,10 +173,14 @@ const LoginPage = () => {
                             </p>
                             <button
                                 onClick={handleResendVerification}
-                                disabled={isResending}
-                                className="text-sm font-medium text-yellow-700 hover:text-yellow-800 underline"
+                                disabled={isResending || cooldownSeconds > 0}
+                                className="text-sm font-medium text-yellow-700 hover:text-yellow-800 underline disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {isResending ? 'Sending...' : 'Resend Verification Email'}
+                                {isResending
+                                    ? 'Sending...'
+                                    : cooldownSeconds > 0
+                                        ? `Resend in ${cooldownSeconds}s`
+                                        : 'Resend Verification Email'}
                             </button>
                         </div>
                     )}
