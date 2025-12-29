@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import EmailVerificationPage from './pages/EmailVerificationPage';
+import DashboardPage from './pages/DashboardPage';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/verify/:token" element={<EmailVerificationPage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
                 </Routes>
             </div>
         </Router>
