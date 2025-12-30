@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { sendMaidApprovalEmail, sendMaidRejectionEmail } = require('../services/emailService');
 
 // @desc    Get all pending maids for approval
 // @route   GET /api/admin/maids/pending
@@ -106,6 +107,10 @@ const approveMaid = async (req, res) => {
         maid.adminNotes = req.body.notes || 'Approved by admin';
         await maid.save();
 
+        // Send approval email (non-blocking)
+        sendMaidApprovalEmail(maid._id, maid.email, maid.name)
+            .catch(err => console.error('Failed to send approval email:', err));
+
         res.status(200).json({
             success: true,
             message: 'Maid approved successfully',
@@ -161,6 +166,10 @@ const rejectMaid = async (req, res) => {
         maid.verificationStatus = 'rejected';
         maid.adminNotes = reason;
         await maid.save();
+
+        // Send rejection email (non-blocking)
+        sendMaidRejectionEmail(maid._id, maid.email, maid.name, reason)
+            .catch(err => console.error('Failed to send rejection email:', err));
 
         res.status(200).json({
             success: true,

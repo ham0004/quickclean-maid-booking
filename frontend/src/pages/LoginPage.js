@@ -79,11 +79,11 @@ const LoginPage = () => {
                 setTimeout(() => {
                     const user = response.user;
                     if (user.role === 'admin') {
-                        navigate('/admin');
+                        navigate('/admin/maids');
                     } else if (user.role === 'maid') {
-                        navigate('/maid/dashboard');
+                        navigate('/dashboard');
                     } else {
-                        navigate('/');
+                        navigate('/dashboard');
                     }
                 }, 1500);
             }

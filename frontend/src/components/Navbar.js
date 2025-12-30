@@ -60,8 +60,8 @@ const Navbar = () => {
                                 key={link.name}
                                 to={link.path}
                                 className={`text-sm font-medium transition-colors duration-200 hover:text-primary-600 ${location.pathname === link.path
-                                        ? 'text-primary-600'
-                                        : isScrolled ? 'text-gray-700' : 'text-gray-700'
+                                    ? 'text-primary-600'
+                                    : isScrolled ? 'text-gray-700' : 'text-gray-700'
                                     }`}
                             >
                                 {link.name}
@@ -73,6 +73,32 @@ const Navbar = () => {
                     <div className="items-center hidden space-x-4 md:flex">
                         {user ? (
                             <div className="flex items-center space-x-4">
+                                {/* Admin Links */}
+                                {user.role === 'admin' && (
+                                    <>
+                                        <Link
+                                            to="/admin/maids"
+                                            className={`text-sm font-medium transition-colors duration-200 hover:text-primary-600 ${location.pathname === '/admin/maids' ? 'text-primary-600' : 'text-gray-700'
+                                                }`}
+                                        >
+                                            Maids
+                                        </Link>
+                                        <Link
+                                            to="/admin/categories"
+                                            className={`text-sm font-medium transition-colors duration-200 hover:text-primary-600 ${location.pathname === '/admin/categories' ? 'text-primary-600' : 'text-gray-700'
+                                                }`}
+                                        >
+                                            Categories
+                                        </Link>
+                                    </>
+                                )}
+                                <Link
+                                    to="/dashboard"
+                                    className={`text-sm font-medium transition-colors duration-200 hover:text-primary-600 ${location.pathname === '/dashboard' ? 'text-primary-600' : 'text-gray-700'
+                                        }`}
+                                >
+                                    Dashboard
+                                </Link>
                                 <div className="flex items-center space-x-2">
                                     <div className="flex items-center justify-center w-8 h-8 text-white rounded-full gradient-bg">
                                         {user.name?.charAt(0).toUpperCase()}
@@ -141,8 +167,8 @@ const Navbar = () => {
                             to={link.path}
                             onClick={() => setIsOpen(false)}
                             className={`block px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${location.pathname === link.path
-                                    ? 'bg-primary-50 text-primary-600'
-                                    : 'text-gray-700 hover:bg-gray-50'
+                                ? 'bg-primary-50 text-primary-600'
+                                : 'text-gray-700 hover:bg-gray-50'
                                 }`}
                         >
                             {link.name}
