@@ -27,6 +27,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/admin/categories', require('./routes/categoryRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/maid', require('./routes/maidRoutes'));
 
 // Health check route

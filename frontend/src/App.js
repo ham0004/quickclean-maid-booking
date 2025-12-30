@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminCategoryPage from './pages/AdminCategoryPage';
+import AdminMaidApprovalPage from './pages/AdminMaidApprovalPage';
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                     <Route path="/verify/:token" element={<EmailVerificationPage />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/admin/categories" element={<AdminCategoryPage />} />
+                    <Route path="/admin/maids" element={<AdminMaidApprovalPage />} />
                 </Routes>
             </div>
         </Router>
@@ -27,4 +29,5 @@ function App() {
 }
 
 export default App;
+
 
