@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { register } from '../services/authService';
+import { registerMaid } from '../services/maidService';
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
@@ -9,8 +10,16 @@ const RegisterPage = () => {
         phone: '',
         password: '',
         confirmPassword: '',
-        role: 'customer'
+        role: 'customer',
+        // Maid-specific fields
+        experience: '',
+        skills: '',
+        bio: '',
+        hourlyRate: '',
+        idType: 'NID',
+        idNumber: ''
     });
+    const [idDocument, setIdDocument] = useState(null);
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
@@ -56,6 +65,22 @@ const RegisterPage = () => {
             newErrors.confirmPassword = 'Passwords do not match';
         }
 
+        // Maid-specific validations
+        if (formData.role === 'maid') {
+            if (!formData.experience) {
+                newErrors.experience = 'Experience is required';
+            }
+            if (!formData.hourlyRate) {
+                newErrors.hourlyRate = 'Hourly rate is required';
+            }
+            if (!formData.idNumber) {
+                newErrors.idNumber = 'ID number is required';
+            }
+            if (!idDocument) {
+                newErrors.idDocument = 'ID document is required';
+            }
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -66,12 +91,36 @@ const RegisterPage = () => {
             ...prev,
             [name]: value
         }));
-        // Clear error when user types
         if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
                 [name]: ''
             }));
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                setErrors(prev => ({
+                    ...prev,
+                    idDocument: 'Only PDF, JPG, and PNG files are allowed'
+                }));
+                return;
+            }
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                setErrors(prev => ({
+                    ...prev,
+                    idDocument: 'File size must be less than 5MB'
+                }));
+                return;
+            }
+            setIdDocument(file);
+            setErrors(prev => ({ ...prev, idDocument: '' }));
         }
     };
 
@@ -86,8 +135,23 @@ const RegisterPage = () => {
         setIsLoading(true);
 
         try {
-            const { confirmPassword, ...submitData } = formData;
-            const response = await register(submitData);
+            let response;
+
+            if (formData.role === 'maid') {
+                // Parse skills from comma-separated string
+                const skillsArray = formData.skills
+                    ? formData.skills.split(',').map(s => s.trim()).filter(s => s)
+                    : [];
+
+                response = await registerMaid({
+                    ...formData,
+                    skills: skillsArray,
+                    idDocument: idDocument
+                });
+            } else {
+                const { confirmPassword, experience, skills, bio, hourlyRate, idType, idNumber, ...submitData } = formData;
+                response = await register(submitData);
+            }
 
             if (response.success) {
                 setMessage({
@@ -101,8 +165,15 @@ const RegisterPage = () => {
                     phone: '',
                     password: '',
                     confirmPassword: '',
-                    role: 'customer'
+                    role: 'customer',
+                    experience: '',
+                    skills: '',
+                    bio: '',
+                    hourlyRate: '',
+                    idType: 'NID',
+                    idNumber: ''
                 });
+                setIdDocument(null);
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
@@ -162,9 +233,7 @@ const RegisterPage = () => {
                                 placeholder="John Doe"
                                 className={`input-field ${errors.name ? 'input-error' : ''}`}
                             />
-                            {errors.name && (
-                                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                            )}
+                            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                         </div>
 
                         {/* Email */}
@@ -181,9 +250,7 @@ const RegisterPage = () => {
                                 placeholder="john@example.com"
                                 className={`input-field ${errors.email ? 'input-error' : ''}`}
                             />
-                            {errors.email && (
-                                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                            )}
+                            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                         </div>
 
                         {/* Phone */}
@@ -200,9 +267,7 @@ const RegisterPage = () => {
                                 placeholder="01234567890"
                                 className={`input-field ${errors.phone ? 'input-error' : ''}`}
                             />
-                            {errors.phone && (
-                                <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-                            )}
+                            {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
                         </div>
 
                         {/* Password */}
@@ -219,9 +284,7 @@ const RegisterPage = () => {
                                 placeholder="••••••••"
                                 className={`input-field ${errors.password ? 'input-error' : ''}`}
                             />
-                            {errors.password && (
-                                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-                            )}
+                            {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
                         </div>
 
                         {/* Confirm Password */}
@@ -238,9 +301,7 @@ const RegisterPage = () => {
                                 placeholder="••••••••"
                                 className={`input-field ${errors.confirmPassword ? 'input-error' : ''}`}
                             />
-                            {errors.confirmPassword && (
-                                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
-                            )}
+                            {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
                         </div>
 
                         {/* Role Selection */}
@@ -258,8 +319,7 @@ const RegisterPage = () => {
                                         }`}
                                 >
                                     <span className="text-2xl block mb-2">🏠</span>
-                                    <span className={`text-sm font-medium ${formData.role === 'customer' ? 'text-primary-700' : 'text-gray-700'
-                                        }`}>
+                                    <span className={`text-sm font-medium ${formData.role === 'customer' ? 'text-primary-700' : 'text-gray-700'}`}>
                                         Book a Maid
                                     </span>
                                 </button>
@@ -272,13 +332,163 @@ const RegisterPage = () => {
                                         }`}
                                 >
                                     <span className="text-2xl block mb-2">👩‍🍳</span>
-                                    <span className={`text-sm font-medium ${formData.role === 'maid' ? 'text-primary-700' : 'text-gray-700'
-                                        }`}>
+                                    <span className={`text-sm font-medium ${formData.role === 'maid' ? 'text-primary-700' : 'text-gray-700'}`}>
                                         Work as a Maid
                                     </span>
                                 </button>
                             </div>
                         </div>
+
+                        {/* Maid-specific fields */}
+                        {formData.role === 'maid' && (
+                            <div className="space-y-5 pt-4 border-t border-gray-200">
+                                <h3 className="font-semibold text-gray-900">Professional Information</h3>
+
+                                {/* Experience & Hourly Rate */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-1">
+                                            Experience (years)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="experience"
+                                            name="experience"
+                                            value={formData.experience}
+                                            onChange={handleChange}
+                                            min="0"
+                                            placeholder="2"
+                                            className={`input-field ${errors.experience ? 'input-error' : ''}`}
+                                        />
+                                        {errors.experience && <p className="mt-1 text-sm text-red-600">{errors.experience}</p>}
+                                    </div>
+                                    <div>
+                                        <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700 mb-1">
+                                            Hourly Rate ($)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="hourlyRate"
+                                            name="hourlyRate"
+                                            value={formData.hourlyRate}
+                                            onChange={handleChange}
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="25"
+                                            className={`input-field ${errors.hourlyRate ? 'input-error' : ''}`}
+                                        />
+                                        {errors.hourlyRate && <p className="mt-1 text-sm text-red-600">{errors.hourlyRate}</p>}
+                                    </div>
+                                </div>
+
+                                {/* Skills */}
+                                <div>
+                                    <label htmlFor="skills" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Skills (comma separated)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="skills"
+                                        name="skills"
+                                        value={formData.skills}
+                                        onChange={handleChange}
+                                        placeholder="Cleaning, Laundry, Cooking"
+                                        className="input-field"
+                                    />
+                                </div>
+
+                                {/* Bio */}
+                                <div>
+                                    <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Bio (optional)
+                                    </label>
+                                    <textarea
+                                        id="bio"
+                                        name="bio"
+                                        value={formData.bio}
+                                        onChange={handleChange}
+                                        rows="3"
+                                        maxLength="500"
+                                        placeholder="Tell customers about yourself..."
+                                        className="input-field"
+                                    />
+                                </div>
+
+                                <h3 className="font-semibold text-gray-900 pt-2">ID Verification</h3>
+
+                                {/* ID Type & Number */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label htmlFor="idType" className="block text-sm font-medium text-gray-700 mb-1">
+                                            ID Type
+                                        </label>
+                                        <select
+                                            id="idType"
+                                            name="idType"
+                                            value={formData.idType}
+                                            onChange={handleChange}
+                                            className="input-field"
+                                        >
+                                            <option value="NID">NID</option>
+                                            <option value="Passport">Passport</option>
+                                            <option value="Driving License">Driving License</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="idNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                            ID Number
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="idNumber"
+                                            name="idNumber"
+                                            value={formData.idNumber}
+                                            onChange={handleChange}
+                                            placeholder="123456789"
+                                            className={`input-field ${errors.idNumber ? 'input-error' : ''}`}
+                                        />
+                                        {errors.idNumber && <p className="mt-1 text-sm text-red-600">{errors.idNumber}</p>}
+                                    </div>
+                                </div>
+
+                                {/* Document Upload */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Upload ID Document
+                                    </label>
+                                    <div className={`border-2 border-dashed rounded-xl p-4 text-center transition-colors ${errors.idDocument ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-primary-400'
+                                        }`}>
+                                        <input
+                                            type="file"
+                                            id="idDocument"
+                                            onChange={handleFileChange}
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                            className="hidden"
+                                        />
+                                        <label htmlFor="idDocument" className="cursor-pointer">
+                                            {idDocument ? (
+                                                <div className="text-green-600">
+                                                    <span className="text-2xl">✅</span>
+                                                    <p className="mt-2 text-sm">{idDocument.name}</p>
+                                                    <p className="text-xs text-gray-500">Click to change</p>
+                                                </div>
+                                            ) : (
+                                                <div className="text-gray-500">
+                                                    <span className="text-2xl">📄</span>
+                                                    <p className="mt-2 text-sm">Click to upload</p>
+                                                    <p className="text-xs">PDF, JPG, PNG (max 5MB)</p>
+                                                </div>
+                                            )}
+                                        </label>
+                                    </div>
+                                    {errors.idDocument && <p className="mt-1 text-sm text-red-600">{errors.idDocument}</p>}
+                                </div>
+
+                                <p className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
+                                    ℹ️ Your profile will be reviewed by an admin before you can start accepting bookings.
+                                </p>
+                            </div>
+                        )}
 
                         {/* Submit Button */}
                         <button
