@@ -62,11 +62,37 @@ const userSchema = new mongoose.Schema({
         state: String,
         zipCode: String
     },
+    // Maid ID documents for verification
+    documents: {
+        idType: {
+            type: String,
+            enum: ['NID', 'Passport', 'Driving License']
+        },
+        idNumber: String,
+        idDocumentUrl: String,
+        uploadedAt: Date
+    },
+    // Admin notes for approval/rejection
+    adminNotes: {
+        type: String,
+        default: null
+    },
     // Maid-specific profile
     maidProfile: {
         experience: Number,
-        specializations: [String],
-        hourlyRate: Number,
+        skills: [String],
+        bio: {
+            type: String,
+            maxlength: 500
+        },
+        availableServices: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'ServiceCategory'
+        }],
+        hourlyRate: {
+            type: Number,
+            min: 0
+        },
         availability: {
             monday: { available: Boolean, startTime: String, endTime: String },
             tuesday: { available: Boolean, startTime: String, endTime: String },
@@ -76,7 +102,6 @@ const userSchema = new mongoose.Schema({
             saturday: { available: Boolean, startTime: String, endTime: String },
             sunday: { available: Boolean, startTime: String, endTime: String }
         },
-        bio: String,
         rating: {
             type: Number,
             default: 0
