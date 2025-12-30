@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import DashboardPage from './pages/DashboardPage';
+import AdminCategoryPage from './pages/AdminCategoryPage';
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/verify/:token" element={<EmailVerificationPage />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/admin/categories" element={<AdminCategoryPage />} />
                 </Routes>
             </div>
         </Router>
@@ -25,3 +27,4 @@ function App() {
 }
 
 export default App;
+
