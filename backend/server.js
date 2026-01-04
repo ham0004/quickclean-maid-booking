@@ -29,6 +29,8 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/admin/categories', require('./routes/categoryRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/maid', require('./routes/maidRoutes'));
+app.use('/api/maids', require('./routes/maidsRoutes'));
+app.use('/api/bookings', require('./routes/bookingRoutes'));
 
 // Health check route
 app.get('/api/health', (req, res) => {

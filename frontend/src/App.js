@@ -8,6 +8,8 @@ import EmailVerificationPage from './pages/EmailVerificationPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminCategoryPage from './pages/AdminCategoryPage';
 import AdminMaidApprovalPage from './pages/AdminMaidApprovalPage';
+import MaidListingPage from './pages/MaidListingPage';
+import MaidProfilePage from './pages/MaidProfilePage';
 
 function App() {
     return (
@@ -22,6 +24,8 @@ function App() {
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/admin/categories" element={<AdminCategoryPage />} />
                     <Route path="/admin/maids" element={<AdminMaidApprovalPage />} />
+                    <Route path="/maids" element={<MaidListingPage />} />
+                    <Route path="/maids/:id" element={<MaidProfilePage />} />
                 </Routes>
             </div>
         </Router>
@@ -29,5 +33,3 @@ function App() {
 }
 
 export default App;
-
-
