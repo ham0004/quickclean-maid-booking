@@ -137,3 +137,10 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Agent/AI files
+.agent/
+
+# Misc development files
+extract_pdf.py
+version_control_extract.txt
