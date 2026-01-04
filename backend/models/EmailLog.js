@@ -15,17 +15,25 @@ const emailLogSchema = new mongoose.Schema({
     },
     emailType: {
         type: String,
-        enum: ['Verification', 'Approval', 'Rejection', 'Booking', 'Welcome'],
+        enum: ['Verification', 'Approval', 'Rejection', 'Booking', 'Welcome', 'BookingConfirmation', 'BookingAlert', 'BookingAccepted', 'BookingRejected'],
         required: true
     },
     status: {
         type: String,
-        enum: ['Sent', 'Failed'],
+        enum: ['Sent', 'Failed', 'Pending', 'PermanentlyFailed'],
         default: 'Sent'
     },
     retryCount: {
         type: Number,
         default: 0
+    },
+    maxRetries: {
+        type: Number,
+        default: 5
+    },
+    nextRetryAt: {
+        type: Date,
+        default: null
     },
     sentAt: {
         type: Date,
@@ -34,13 +42,19 @@ const emailLogSchema = new mongoose.Schema({
     errorMessage: {
         type: String,
         default: null
+    },
+    // Store email data for retry
+    emailData: {
+        type: mongoose.Schema.Types.Mixed,
+        default: null
     }
 }, {
     timestamps: true
 });
 
-// Index for querying failed emails
+// Index for querying failed emails that need retry
 emailLogSchema.index({ status: 1, retryCount: 1 });
+emailLogSchema.index({ status: 1, nextRetryAt: 1 });
 emailLogSchema.index({ userId: 1 });
 
 module.exports = mongoose.model('EmailLog', emailLogSchema);
