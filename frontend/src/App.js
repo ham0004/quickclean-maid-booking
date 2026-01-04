@@ -10,6 +10,7 @@ import AdminCategoryPage from './pages/AdminCategoryPage';
 import AdminMaidApprovalPage from './pages/AdminMaidApprovalPage';
 import MaidListingPage from './pages/MaidListingPage';
 import MaidProfilePage from './pages/MaidProfilePage';
+import BookingPage from './pages/BookingPage';
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                     <Route path="/admin/maids" element={<AdminMaidApprovalPage />} />
                     <Route path="/maids" element={<MaidListingPage />} />
                     <Route path="/maids/:id" element={<MaidProfilePage />} />
+                    <Route path="/book/:maidId" element={<BookingPage />} />
                 </Routes>
             </div>
         </Router>
