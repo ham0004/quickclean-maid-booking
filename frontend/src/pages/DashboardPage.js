@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getCurrentUser, resendVerification } from '../services/authService';
+import MaidBookingsTab from '../components/MaidBookingsTab';
 
 const DashboardPage = () => {
     const navigate = useNavigate();
@@ -166,10 +167,10 @@ const DashboardPage = () => {
                             </h1>
                             <p className="text-gray-600 flex items-center gap-2">
                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user?.role === 'admin'
-                                        ? 'bg-purple-100 text-purple-800'
-                                        : user?.role === 'maid'
-                                            ? 'bg-blue-100 text-blue-800'
-                                            : 'bg-green-100 text-green-800'
+                                    ? 'bg-purple-100 text-purple-800'
+                                    : user?.role === 'maid'
+                                        ? 'bg-blue-100 text-blue-800'
+                                        : 'bg-green-100 text-green-800'
                                     }`}>
                                     {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}
                                 </span>
@@ -324,6 +325,13 @@ const DashboardPage = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Maid Bookings Section */}
+                {user?.role === 'maid' && (
+                    <div className="mt-8 glass-card !p-6 fade-in">
+                        <MaidBookingsTab />
+                    </div>
+                )}
             </div>
         </div>
     );
